@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gloria's Dashboard</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1e1e2f;
+      color: #f0f0f0;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    #clock {
+      font-size: 3rem;
+      margin-bottom: 30px;
+    }
+    .block, .task, .journal {
+      background-color: #2a2a40;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 10px auto;
+      max-width: 500px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.1);
+      text-align: left;
+    }
+    .now {
+      border: 2px solid #ffd700;
+    }
+    h2 {
+      margin-top: 40px;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      margin-bottom: 10px;
+      background-color: #333;
+      color: #fff;
+    }
+    button {
+      background-color: #ffd700;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      color: #000;
+      font-weight: bold;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      padding: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌿 Gloria's Spiritual Dashboard</h1>
+  <div id="clock">--:--:--</div>
+
+  <div id="schedule"></div>
+
+  <h2>📌 Task Tracker</h2>
+  <div class="task">
+    <input type="text" id="taskInput" placeholder="Enter a new task" />
+    <button onclick="addTask()">Add Task</button>
+    <ul id="taskList"></ul>
+  </div>
+
+  <h2>📓 Journal</h2>
+  <div class="journal">
+    <textarea id="journalInput" rows="6" placeholder="Write your thoughts, prayers, or reflections..."></textarea>
+    <button onclick="saveJournal()">Save Entry</button>
+    <div id="journalEntries"></div>
+  </div>
+
+  <audio id="alertSound">
+    <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg" />
+  </audio>
+
+  <script>
+    const schedule = {
+      Monday: [
+        { time: "03:00", activity: "🛐 Early Morning Prayers" },
+        { time: "07:30", activity: "📖 Bible Reading" },
+        { time: "21:50", activity: "🙏 Night Prayers" },
+      ],
+      Tuesday: [
+        { time: "03:00", activity: "🛐 Early Morning Prayers" },
+        { time: "07:30", activity: "📖 Bible Reading" },
+        { time: "21:50", activity: "🙏 Night Prayers" },
+      ],
+      Wednesday: [
+        { time: "03:00", activity: "🛐 Early Morning Prayers" },
+        { time: "07:30", activity: "📖 Bible Reading" },
+        { time: "21:50", activity: "🙏 Night Prayers" },
+      ],
+      Thursday: [
+        { time: "03:00", activity: "🛐 Early Morning Prayers" },
+        { time: "07:30", activity: "📖 Bible Reading" },
+        { time: "21:50", activity: "🙏 Night Prayers" },
+      ],
+      Friday: [
+        { time: "03:00", activity: "🛐 Early Morning Prayers" },
+        { time: "07:30", activity: "📖 Bible Reading" },
+        { time: "21:50", activity: "🙏 Night Prayers" },
+      ],
+      Saturday: [
+        { time: "12:00", activity: "📖 Bible Reading" },
+        { time: "16:00", activity: "🙏 Prayer Time" },
+        { time: "19:30", activity: "📖 Evening Bible Reading" },
+        { time: "22:00", activity: "🛐 Night Prayer" },
+      ],
+    };
+
+    const clock = document.getElementById("clock");
+    const scheduleDiv = document.getElementById("schedule");
+    const audio = document.getElementById("alertSound");
+
+    function updateClock() {
+      const now = new Date();
+      const currentTime = now.toLocaleTimeString("en-KE", {
+        hour12: false,
+        timeZone: "Africa/Nairobi",
+      });
+      clock.textContent = currentTime;
+
+      renderSchedule(now);
+    }
+
+    function renderSchedule(now) {
+      const dayName = now.toLocaleDateString("en-US", { weekday: "long" });
+      const currentHourMinute = `${now
+        .getHours()
+        .toString()
+        .padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
+      const todaysSchedule = schedule[dayName] || [];
+      scheduleDiv.innerHTML = "";
+
+      todaysSchedule.forEach(({ time, activity }) => {
+        const block = document.createElement("div");
+        block.className = "block";
+        block.textContent = `${time} - ${activity}`;
+        if (currentHourMinute === time) {
+          block.classList.add("now");
+          audio.play();
+        }
+        scheduleDiv.appendChild(block);
+      });
+    }
+
+    function addTask() {
+      const input = document.getElementById("taskInput");
+      const taskList = document.getElementById("taskList");
+      if (input.value.trim() !== "") {
+        const li = document.createElement("li");
+        li.textContent = input.value;
+        taskList.appendChild(li);
+        input.value = "";
+      }
+    }
+
+    function saveJournal() {
+      const input = document.getElementById("journalInput");
+      const entries = document.getElementById("journalEntries");
+      if (input.value.trim() !== "") {
+        const entry = document.createElement("div");
+        entry.style.marginTop = "10px";
+        entry.style.padding = "10px";
+        entry.style.borderTop = "1px solid #444";
+        entry.innerHTML = `<strong>${new Date().toLocaleString()}:</strong><br>${input.value}`;
+        entries.prepend(entry);
+        input.value = "";
+      }
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+</body>
+</html>
